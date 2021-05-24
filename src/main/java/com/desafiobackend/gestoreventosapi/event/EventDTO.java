@@ -1,20 +1,24 @@
-package com.desafiobackend.gestoreventosapi.user;
+package com.desafiobackend.gestoreventosapi.event;
 
 import com.desafiobackend.gestoreventosapi.base.DTO;
-import com.desafiobackend.gestoreventosapi.event.EventDTO;
+import com.desafiobackend.gestoreventosapi.user.UserDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserDTO extends DTO {
+public class EventDTO extends DTO {
 
     @Id
     private String id;
 
     private String name;
 
-    private String email;
+    private Date date;
+
+    private UserDTO user;
 
 }

@@ -47,7 +47,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity getUsers() {
-        List<UserDTO> result = service.getAll(UserDTO.class);
+        List<User> result = service.getAll();
         if (Objects.equals(result, null)) return new RestResponse("users not found").status(HttpStatus.NOT_FOUND);
         return new RestResponse("users found", result).status(HttpStatus.OK);
     }

@@ -11,15 +11,19 @@ import java.util.stream.Collectors;
 
 public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServiceBaseInterface<T, D> {
 
-    @Autowired
     protected MongoRepository repository;
+
+    public RestServiceBaseImpl(MongoRepository repository) {
+        this.repository = repository;
+    }
+
     @Autowired
     protected ModelMapper modelMapper;
 
-    @Override
     public void create(T o) {
         repository.save(o);
     }
+
 
     @Override
     public String update(String id, T o) {
