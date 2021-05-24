@@ -5,6 +5,7 @@ import com.desafiobackend.gestoreventosapi.user.UserDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import java.util.Date;
 
@@ -19,6 +20,7 @@ public class EventDTO extends DTO {
 
     private Date date;
 
+    @DBRef
     private UserDTO user;
 
 }
