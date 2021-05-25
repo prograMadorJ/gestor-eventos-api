@@ -1,6 +1,6 @@
-package com.desafiobackend.gestoreventosapi.event;
+package com.desafiobackend.gestoreventosapi.domain.event;
 
-import com.desafiobackend.gestoreventosapi.user.UserService;
+import com.desafiobackend.gestoreventosapi.domain.user.UserService;
 import com.desafiobackend.gestoreventosapi.utils.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

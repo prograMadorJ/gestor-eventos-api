@@ -1,4 +1,4 @@
-package com.desafiobackend.gestoreventosapi.user;
+package com.desafiobackend.gestoreventosapi.domain.user;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

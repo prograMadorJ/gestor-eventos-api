@@ -1,6 +1,6 @@
-package com.desafiobackend.gestoreventosapi.event;
+package com.desafiobackend.gestoreventosapi.domain.event;
 
-import com.desafiobackend.gestoreventosapi.user.User;
+import com.desafiobackend.gestoreventosapi.domain.user.User;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;

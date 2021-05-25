@@ -1,4 +1,4 @@
-package com.desafiobackend.gestoreventosapi.event;
+package com.desafiobackend.gestoreventosapi.domain.event;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;

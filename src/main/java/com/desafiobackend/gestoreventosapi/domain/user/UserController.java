@@ -1,4 +1,4 @@
-package com.desafiobackend.gestoreventosapi.user;
+package com.desafiobackend.gestoreventosapi.domain.user;
 
 import com.desafiobackend.gestoreventosapi.utils.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity getUsers() {
-        List<User> result = service.getAll();
+        List<UserDTO> result = service.getAll(UserDTO.class);
         if (Objects.equals(result, null)) return new RestResponse("users not found").status(HttpStatus.NOT_FOUND);
         return new RestResponse("users found", result).status(HttpStatus.OK);
     }

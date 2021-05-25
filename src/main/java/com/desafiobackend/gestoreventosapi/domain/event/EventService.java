@@ -1,4 +1,4 @@
-package com.desafiobackend.gestoreventosapi.event;
+package com.desafiobackend.gestoreventosapi.domain.event;
 
 import com.desafiobackend.gestoreventosapi.base.RestServiceBaseImpl;
 import org.springframework.beans.factory.annotation.Autowired;

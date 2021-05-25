@@ -1,7 +1,7 @@
-package com.desafiobackend.gestoreventosapi.event;
+package com.desafiobackend.gestoreventosapi.domain.event;
 
 import com.desafiobackend.gestoreventosapi.base.DTO;
-import com.desafiobackend.gestoreventosapi.user.UserDTO;
+import com.desafiobackend.gestoreventosapi.domain.user.UserDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
