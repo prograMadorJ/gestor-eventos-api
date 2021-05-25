@@ -2,6 +2,8 @@ package com.desafiobackend.gestoreventosapi.domain.event;
 
 import com.desafiobackend.gestoreventosapi.domain.user.UserService;
 import com.desafiobackend.gestoreventosapi.utils.RestResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
+@Api("Eventos")
 @RestController
-@RequestMapping("/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     @Autowired
@@ -20,6 +23,7 @@ public class EventController {
     @Autowired
     private UserService userService;
 
+    @ApiOperation("Cria um novo evento")
     @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event) {
         if(userService.getOne(event.getUser().getId()) == null) return new RestResponse("user is not null").status(HttpStatus.BAD_REQUEST);
@@ -29,6 +33,7 @@ public class EventController {
                 : new RestResponse("create error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ApiOperation("Atualiza um evento")
     @PutMapping
     public ResponseEntity updateEvent(@RequestBody Event event) {
         if(userService.getOne(event.getUser().getId()) == null)  return new RestResponse("user is not null").status(HttpStatus.BAD_REQUEST);
@@ -38,6 +43,7 @@ public class EventController {
         return new RestResponse("update error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ApiOperation("Remove um evento")
     @DeleteMapping("{id}")
     public ResponseEntity deleteEvent(@PathVariable String id) {
         String result = service.delete(id);
@@ -46,6 +52,7 @@ public class EventController {
         return new RestResponse("delete error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ApiOperation("Obtem um evento pelo id")
     @GetMapping("{id}")
     public ResponseEntity getEvent(@PathVariable String id) {
         EventDTO result = service.getOne(id, EventDTO.class);
@@ -53,6 +60,7 @@ public class EventController {
         return new RestResponse("event found", result).status(HttpStatus.OK);
     }
 
+    @ApiOperation("Obtem todos os eventos")
     @GetMapping
     public ResponseEntity getEvents() {
         List<EventDTO> result = service.getAll(EventDTO.class);
@@ -60,6 +68,7 @@ public class EventController {
         return new RestResponse("events found", result).status(HttpStatus.OK);
     }
 
+    @ApiOperation("Obtem um evento de um usuário especificado pelo o id de usuário")
     @GetMapping("/user/{id}")
     public ResponseEntity getEventsByUserId(@PathVariable String id) {
         List<Event> result = service.getEventsByUserId(id);

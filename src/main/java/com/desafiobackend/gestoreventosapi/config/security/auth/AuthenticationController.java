@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.desafiobackend.gestoreventosapi.config.security.service.UserDetailsServiceImpl;
 import com.desafiobackend.gestoreventosapi.domain.user.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,8 +23,9 @@ import static com.desafiobackend.gestoreventosapi.config.security.SecurityConsta
 import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.SECRET;
 
 
+@Api("Autenticação")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
 
     @Autowired
@@ -34,7 +37,7 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-
+    @ApiOperation("Retorna a autenciação do usuário")
     @PostMapping
     public ResponseEntity createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
         try {
