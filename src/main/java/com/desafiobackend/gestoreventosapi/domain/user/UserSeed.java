@@ -17,7 +17,7 @@ public class UserSeed {
         user.setAdmin(true);
         user.setRole("SYSTEM");
         user.setPassword(new BCryptPasswordEncoder().encode("12345678"));
-        Object result = repository.findByEmail(user.getEmail()).orElse(null);
+        Object result = repository.findByRole(user.getRole()).orElse(null);
         if(result == null) repository.save(user);
     }
 }
