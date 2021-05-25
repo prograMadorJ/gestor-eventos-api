@@ -13,13 +13,13 @@ import java.util.Objects;
 
 @Api("Usuário")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping(value = "/api/users", consumes = "application/json", produces = "application/json")
 public class UserController {
 
     @Autowired
     private UserService service;
 
-    @ApiOperation("Cria um novo usuário")
+    @ApiOperation(value = "Criar Usuário", notes = "Cria um novo usuário", response = RestResponse.class)
     @PostMapping
     public ResponseEntity createUser(@RequestBody User user) {
         String result = service.create(user);
@@ -28,7 +28,7 @@ public class UserController {
                 : new RestResponse("create success").status(HttpStatus.OK);
     }
 
-    @ApiOperation("Atualiza um usuário")
+    @ApiOperation(value = "Atualizar Usuário", notes = "Atualiza um usuário", response = RestResponse.class)
     @PutMapping
     public ResponseEntity updateUser(@RequestBody User user) {
         String result = service.update(user.getId(), user);
@@ -38,7 +38,7 @@ public class UserController {
         return new RestResponse("update error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation("Remove um usuário")
+    @ApiOperation(value = "Remover Usuário", notes = "Remove um usuário", response = RestResponse.class)
     @DeleteMapping("{id}")
     public ResponseEntity deleteUser(@PathVariable String id) {
         String result = service.delete(id);
@@ -47,7 +47,7 @@ public class UserController {
         return new RestResponse("delete error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation("Obtem um usuário pelo id")
+    @ApiOperation(value = "Obter um Usuário", notes = "Obtem um usuário pelo id", response = RestResponse.class)
     @GetMapping("{id}")
     public ResponseEntity getUser(@PathVariable String id) {
         UserDTO result = service.getOne(id, UserDTO.class);
@@ -55,7 +55,7 @@ public class UserController {
         return new RestResponse("user found", result).status(HttpStatus.OK);
     }
 
-    @ApiOperation("Obtem todos os usuários")
+    @ApiOperation(value = "Obter Todos Usuários", notes = "Obtem todos os usuários", response = RestResponse.class)
     @GetMapping
     public ResponseEntity getUsers() {
         List<UserDTO> result = service.getAll(UserDTO.class);

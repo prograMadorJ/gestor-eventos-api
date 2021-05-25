@@ -4,9 +4,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.desafiobackend.gestoreventosapi.config.security.service.UserDetailsServiceImpl;
 import com.desafiobackend.gestoreventosapi.domain.user.UserService;
+import com.desafiobackend.gestoreventosapi.utils.RestResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -25,7 +27,7 @@ import static com.desafiobackend.gestoreventosapi.config.security.SecurityConsta
 
 @Api("Autenticação")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping(value ="/api/auth", consumes = "application/json", produces = "application/json")
 public class AuthenticationController {
 
     @Autowired
@@ -37,7 +39,7 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation("Retorna a autenciação do usuário")
+    @ApiOperation(value = "Autenticar usuário", notes = "Retorna a autenciação do usuário", response = RestResponse.class)
     @PostMapping
     public ResponseEntity createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
         try {
@@ -55,7 +57,7 @@ public class AuthenticationController {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwtToken, userService.getUserByEmail(authenticationRequest.getUsername())));
+        return new RestResponse("authentication success", new AuthenticationResponse(jwtToken, userService.getUserByEmail(authenticationRequest.getUsername()))).status(HttpStatus.OK);
     }
 
 }
