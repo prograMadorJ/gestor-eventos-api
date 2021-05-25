@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface RestServiceBaseInterface<T, D extends DTO> {
 
-    void create(T o);
+    String create(T o);
 
     String update(String id, T o);
 

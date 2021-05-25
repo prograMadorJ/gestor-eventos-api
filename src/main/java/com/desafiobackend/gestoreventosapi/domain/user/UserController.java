@@ -18,8 +18,10 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity createUser(@RequestBody User user) {
-        service.create(user);
-        return new RestResponse("create success").status(HttpStatus.OK);
+        String result = service.create(user);
+        return result.equals("conflict")
+                ? new RestResponse("user conflict").status(HttpStatus.CONFLICT)
+                : new RestResponse("create success").status(HttpStatus.OK);
     }
 
     @PutMapping
@@ -27,6 +29,7 @@ public class UserController {
         String result = service.update(user.getId(), user);
         if (result.equals("not found")) return new RestResponse("user not found").status(HttpStatus.NOT_FOUND);
         if (result.equals("updated")) return new RestResponse("update success").status(HttpStatus.OK);
+        if (result.equals("conflict")) return new RestResponse("update conflict").status(HttpStatus.CONFLICT);
         return new RestResponse("update error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

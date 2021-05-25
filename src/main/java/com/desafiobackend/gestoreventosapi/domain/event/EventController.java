@@ -23,8 +23,10 @@ public class EventController {
     @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event) {
         if(userService.getOne(event.getUser().getId()) == null) return new RestResponse("user is not null").status(HttpStatus.BAD_REQUEST);
-        service.create(event);
-        return new RestResponse("create success").status(HttpStatus.OK);
+        String result = service.create(event);
+        return result.equals("created")
+                ? new RestResponse("create success").status(HttpStatus.OK)
+                : new RestResponse("create error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @PutMapping

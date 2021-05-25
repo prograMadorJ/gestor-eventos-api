@@ -20,8 +20,9 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
     @Autowired
     protected ModelMapper modelMapper;
 
-    public void create(T o) {
-        repository.save(o);
+    public String create(T o) {
+        Object result = repository.save(o);
+        return result != null ? "created" : "error";
     }
 
 

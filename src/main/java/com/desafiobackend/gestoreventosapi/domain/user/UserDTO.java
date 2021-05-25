@@ -16,4 +16,7 @@ public class UserDTO extends DTO {
 
     private String email;
 
+    private boolean admin;
+
+    private String role;
 }
