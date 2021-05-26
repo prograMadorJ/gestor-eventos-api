@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-@Api("Eventos")
+@Api(value = "Eventos", consumes = "application/json", produces = "application/json")
 @RestController
-@RequestMapping(value = "/api/events", consumes = "application/json", produces = "application/json")
+@RequestMapping("/api/events")
 public class EventController {
 
     @Autowired
@@ -23,7 +23,8 @@ public class EventController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "Criar Evento", notes = "Cria um novo evento", response = RestResponse.class)
+    @ApiOperation(value = "Criar Evento", notes = "Cria um novo evento", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @PostMapping
     public ResponseEntity createEvent(@RequestBody Event event) {
         if(userService.getOne(event.getUser().getId()) == null) return new RestResponse("user is not null").status(HttpStatus.BAD_REQUEST);
@@ -33,7 +34,8 @@ public class EventController {
                 : new RestResponse("create error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(value = "Atualizar Evento", notes = "Atualiza um evento", response = RestResponse.class)
+    @ApiOperation(value = "Atualizar Evento", notes = "Atualiza um evento", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @PutMapping
     public ResponseEntity updateEvent(@RequestBody Event event) {
         if(userService.getOne(event.getUser().getId()) == null)  return new RestResponse("user is not null").status(HttpStatus.BAD_REQUEST);
@@ -43,7 +45,8 @@ public class EventController {
         return new RestResponse("update error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(value = "Remover Evento", notes = "Remove um evento", response = RestResponse.class)
+    @ApiOperation(value = "Remover Evento", notes = "Remove um evento", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @DeleteMapping("{id}")
     public ResponseEntity deleteEvent(@PathVariable String id) {
         String result = service.delete(id);
@@ -52,7 +55,8 @@ public class EventController {
         return new RestResponse("delete error").status(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ApiOperation(value = "Obter Evento", notes = "Obtem um evento pelo id", response = RestResponse.class)
+    @ApiOperation(value = "Obter Evento", notes = "Obtem um evento pelo id", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @GetMapping("{id}")
     public ResponseEntity getEvent(@PathVariable String id) {
         EventDTO result = service.getOne(id, EventDTO.class);
@@ -60,7 +64,8 @@ public class EventController {
         return new RestResponse("event found", result).status(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Obter Eventos", notes = "Obtem todos os eventos", response = RestResponse.class)
+    @ApiOperation(value = "Obter Eventos", notes = "Obtem todos os eventos", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @GetMapping
     public ResponseEntity getEvents() {
         List<EventDTO> result = service.getAll(EventDTO.class);
@@ -68,7 +73,8 @@ public class EventController {
         return new RestResponse("events found", result).status(HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Obter Evento por Usuário", notes = "Obtem um evento de um usuário especificado pelo o id de usuário", response = RestResponse.class)
+    @ApiOperation(value = "Obter Evento por Usuário", notes = "Obtem um evento de um usuário especificado pelo o id de usuário", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @GetMapping("/user/{id}")
     public ResponseEntity getEventsByUserId(@PathVariable String id) {
         List<Event> result = service.getEventsByUserId(id);

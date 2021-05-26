@@ -25,9 +25,9 @@ import static com.desafiobackend.gestoreventosapi.config.security.SecurityConsta
 import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.SECRET;
 
 
-@Api("Autenticação")
+@Api(value = "Autenticação", consumes = "application/json", produces = "application/json")
 @RestController
-@RequestMapping(value ="/api/auth", consumes = "application/json", produces = "application/json")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
 
     @Autowired
@@ -39,7 +39,8 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    @ApiOperation(value = "Autenticar usuário", notes = "Retorna a autenciação do usuário", response = RestResponse.class)
+    @ApiOperation(value = "Autenticar usuário", notes = "Retorna a autenciação do usuário", response = RestResponse.class,
+            consumes = "application/json", produces = "application/json")
     @PostMapping
     public ResponseEntity createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
         try {
