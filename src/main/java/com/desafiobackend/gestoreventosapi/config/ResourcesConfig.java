@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.WEB_APP_HOME_URL;
+import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.WEB_APP_URL;
 
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer {
@@ -25,7 +26,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         ResourceResolver resolver = new ReactResourceResolver();
-        registry.addResourceHandler("/app/**")
+        registry.addResourceHandler(WEB_APP_URL + "/**")
                 .resourceChain(true)
                 .addResolver(resolver);
 
@@ -96,7 +97,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
     @RestController
     public static class HomeController {
 
-        @GetMapping(value = "/app")
+        @GetMapping(value = {"/", WEB_APP_URL})
         public void index(HttpServletResponse httpServletResponse) {
             httpServletResponse.setHeader("Location", WEB_APP_HOME_URL);
             httpServletResponse.setStatus(302);
