@@ -4,15 +4,20 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolverChain;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.WEB_APP_HOME_URL;
 
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer {
@@ -20,7 +25,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         ResourceResolver resolver = new ReactResourceResolver();
-        registry.addResourceHandler("/**")
+        registry.addResourceHandler("/app/**")
                 .resourceChain(true)
                 .addResolver(resolver);
 
@@ -48,7 +53,8 @@ public class ResourcesConfig implements WebMvcConfigurer {
 
         private final Resource index = new ClassPathResource(REACT_DIR + "index.html");
         private final List<String> rootStaticFiles = Arrays.asList("favicon.io",
-                "asset-manifest.json", "manifest.json", "service-worker.js");
+                "asset-manifest.json", "manifest.json");
+//                "asset-manifest.json", "manifest.json", "service-worker.js");
 
         @Override
         public Resource resolveResource(
@@ -85,5 +91,15 @@ public class ResourcesConfig implements WebMvcConfigurer {
                 return index;
         }
 
+    }
+
+    @RestController
+    public static class HomeController {
+
+        @GetMapping(value = "/app")
+        public void index(HttpServletResponse httpServletResponse) {
+            httpServletResponse.setHeader("Location", WEB_APP_HOME_URL);
+            httpServletResponse.setStatus(302);
+        }
     }
 }
