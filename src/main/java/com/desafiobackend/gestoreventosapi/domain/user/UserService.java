@@ -2,6 +2,7 @@ package com.desafiobackend.gestoreventosapi.domain.user;
 
 import com.desafiobackend.gestoreventosapi.base.RestServiceBaseImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -52,7 +53,9 @@ public class UserService extends RestServiceBaseImpl<User, UserDTO> {
     }
 
     public UserDTO getUserAuthenticated() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth == null) throw new BadCredentialsException("missing authentication");
+        Object principal = auth.getPrincipal();
         String username = (principal instanceof UserDetails)
                 ?  ((UserDetails) principal).getUsername()
                 : principal.toString();
