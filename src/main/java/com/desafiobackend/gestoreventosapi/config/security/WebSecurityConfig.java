@@ -14,8 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.SIGN_IN_URL;
-import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.SIGN_UP_URL;
+import static com.desafiobackend.gestoreventosapi.config.security.SecurityConstants.*;
 
 
 @EnableWebSecurity
@@ -53,6 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                .antMatchers(WEB_APP_URL).permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_IN_URL).permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .anyRequest()
