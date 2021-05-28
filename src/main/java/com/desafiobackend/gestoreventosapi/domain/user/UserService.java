@@ -1,6 +1,7 @@
 package com.desafiobackend.gestoreventosapi.domain.user;
 
 import com.desafiobackend.gestoreventosapi.base.RestServiceBaseImpl;
+import com.desafiobackend.gestoreventosapi.domain.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService extends RestServiceBaseImpl<User, UserDTO> {
 
+    @Autowired
+    private UserRules userRules;
+
     private final UserRepository userRepository;
+
+    @Autowired
+    private EventService eventService;
 
     @Autowired
     public UserService(UserRepository repository) {
@@ -22,8 +29,12 @@ public class UserService extends RestServiceBaseImpl<User, UserDTO> {
 
     @Override
     public String create(User user) {
-        User result = userRepository.findByEmail(user.getEmail()).orElse(null);
-        if (result != null) return "conflict";
+        User userCreate = userRepository.findByEmail(user.getEmail()).orElse(null);
+        if (
+                userRules.isNotValid
+                        .whenUserExistsByEmail(userCreate)
+                        .fullValidate()
+        ) return UserResponseMessages.CONFLICT;
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setRole("USER");
         return super.create(user);
@@ -32,7 +43,20 @@ public class UserService extends RestServiceBaseImpl<User, UserDTO> {
     @Override
     public String update(String id, User user) {
         UserDTO userAuth = getUserAuthenticated();
-        if (!userAuth.isAdmin() && !userAuth.getEmail().equals(user.getEmail())) return "conflict";
+        if(
+                userRules.isNotValid
+                .whenUserAuthIsAdmin(userAuth.isAdmin())
+                .whenUserAuthByEmailSameAsUser(userAuth.getEmail(), user.getEmail())
+                .fullValidate()
+        ) {
+            return UserResponseMessages.CONFLICT;
+        } else if (
+                userRules.isNotValid
+                        .whenUserAuthIsNotAdmin(userAuth.isAdmin())
+                        .whenUserAuthByEmailNotSameAsUser(userAuth.getEmail(), user.getEmail())
+                        .whenUserExistsByEmail(userRepository.findByEmail(user.getEmail()).orElse(null))
+                        .fullValidate()
+        ) return UserResponseMessages.CONFLICT;
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return super.update(id, user);
     }
@@ -40,9 +64,20 @@ public class UserService extends RestServiceBaseImpl<User, UserDTO> {
     @Override
     public String delete(String id) {
         UserDTO userAuth = getUserAuthenticated();
-        User userDTO = getOne(id);
-        if(userAuth.getRole().equals(userDTO.getRole())) {
-           return "no deleted";
+        User userDelete = userRepository.findById(id).orElse(null);
+        if(
+                userRules.isNotValid
+                        .whenUserHasOneOrManyEvent(eventService.getEventsByUserId(id))
+                .fullValidate()
+        ) return UserResponseMessages.CANNOT_DELETE_HAS_EVENTS;
+
+        else if(
+                userRules.isNotValid
+                        .whenUserAuthWithRoleIsNotSystem(userAuth.getRole())
+                        .whenUserAuthWithRoleIsSystemTryDeleteYourSelf(userAuth.getRole(), userDelete)
+                        .validateAtLeastOne()
+        ) {
+            return UserResponseMessages.CANNOT_DELETE;
         }
         return super.delete(id);
     }

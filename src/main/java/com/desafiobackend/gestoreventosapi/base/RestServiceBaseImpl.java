@@ -22,7 +22,7 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
 
     public String create(T o) {
         Object result = repository.save(o);
-        return result != null ? "created" : "error";
+        return result != null ? BaseResponseMessages.CREATED : BaseResponseMessages.CREATE_ERROR;
     }
 
 
@@ -30,10 +30,10 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
     public String update(String id, T o) {
         Object result = repository.findById(id).orElse(null);
         if(Objects.equals(result, null)) {
-            return "not found";
+            return BaseResponseMessages.NOT_FOUND;
         } else {
             repository.save(o);
-            return "updated";
+            return BaseResponseMessages.UPDATED;
         }
     }
 
@@ -41,10 +41,10 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
     public String delete(String id) {
         Object result = repository.findById(id).orElse(null);
         if(Objects.equals(result, null)) {
-            return "not found";
+            return BaseResponseMessages.NOT_FOUND;
         } else {
             repository.deleteById(id);
-            return "deleted";
+            return BaseResponseMessages.DELETED;
         }
     }
 
