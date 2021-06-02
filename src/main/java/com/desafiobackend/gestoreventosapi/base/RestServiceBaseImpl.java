@@ -2,25 +2,25 @@ package com.desafiobackend.gestoreventosapi.base;
 
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServiceBaseInterface<T, D> {
 
-    protected MongoRepository repository;
+public class RestServiceBaseImpl<T, D extends DTO> implements RestServiceBaseInterface<T, D> {
+
+    private final MongoRepository repository;
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     public RestServiceBaseImpl(MongoRepository repository) {
         this.repository = repository;
     }
 
-    @Autowired
-    protected ModelMapper modelMapper;
-
     public String create(T o) {
+        if (o == null) return BaseResponseMessages.GIVEN_NULL;
         Object result = repository.save(o);
         return result != null ? BaseResponseMessages.CREATED : BaseResponseMessages.CREATE_ERROR;
     }
@@ -28,6 +28,13 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
 
     @Override
     public String update(String id, T o) {
+        if (o == null) {
+            return BaseResponseMessages.GIVEN_NULL;
+
+        } else if(Objects.equals(id, null)) {
+            return BaseResponseMessages.ID_NULL;
+        }
+
         Object result = repository.findById(id).orElse(null);
         if(Objects.equals(result, null)) {
             return BaseResponseMessages.NOT_FOUND;
@@ -39,6 +46,9 @@ public abstract class RestServiceBaseImpl<T, D extends DTO> implements RestServi
 
     @Override
     public String delete(String id) {
+        if(Objects.equals(id, null)) {
+            return BaseResponseMessages.ID_NULL;
+        }
         Object result = repository.findById(id).orElse(null);
         if(Objects.equals(result, null)) {
             return BaseResponseMessages.NOT_FOUND;

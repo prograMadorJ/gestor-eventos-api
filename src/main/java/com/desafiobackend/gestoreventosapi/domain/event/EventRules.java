@@ -12,11 +12,10 @@ public class EventRules extends BaseRules {
     public IsNotValid isNotValid;
 
     @Service
-    public static class IsNotValid extends EventRules {
+    public static class IsNotValid extends BaseRules {
 
-        public IsNotValid whenUserNotExists(User resultFindUser) {
-            rules.add(resultFindUser == null);
-            return this;
+        public boolean whenUserNotExists(User resultFindUser) {
+            return rules.add(resultFindUser == null);
         }
 
     }

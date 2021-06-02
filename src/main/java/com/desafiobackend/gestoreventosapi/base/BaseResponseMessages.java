@@ -20,62 +20,55 @@ public abstract class BaseResponseMessages {
     public static final String UPDATED_ERROR = "update error";
     public static final String DELETE_ERROR = "delete error";
     public static final String CANNOT_DELETE = "conditions not allowed delete";
+    public static final String GIVEN_NULL = "the value provided must not be null";
+    public static final String AUTH_REQUIRED = "authentication required";
+    public static final String ID_NULL = "the id value provided must not be null";
 
     public static String resultMessage = "";
     public static HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
     public static Object content = null;
 
 
-    public CaseResponse resultMessage(String message) {
-        CaseResponse.resultMessage = message;
-        return new CaseResponse(message);
+    public BaseResponseMessages() {
     }
 
-    public CaseResponse resultContent(Object content) {
-        CaseResponse.content = content;
-        return new CaseResponse(content);
+    public BaseResponseMessages(String resultMessage) {
+        BaseResponseMessages.resultMessage = resultMessage;
     }
+
+    public BaseResponseMessages(String resultMessage, Object content) {
+        BaseResponseMessages.resultMessage = resultMessage;
+        BaseResponseMessages.content = content;
+    }
+
 
     public ResponseEntity buildResponse() {
-        ResponseEntity result = new RestResponse(CaseResponse.resultMessage, CaseResponse.content).status(CaseResponse.httpStatus);
-        CaseResponse.resultMessage = "";
-        CaseResponse.httpStatus = HttpStatus.NOT_IMPLEMENTED;
-        CaseResponse.content = null;
+        ResponseEntity result = new RestResponse(BaseResponseMessages.resultMessage, BaseResponseMessages.content).status(BaseResponseMessages.httpStatus);
+        BaseResponseMessages.resultMessage = "";
+        BaseResponseMessages.httpStatus = HttpStatus.NOT_IMPLEMENTED;
+        BaseResponseMessages.content = null;
         return result;
     }
 
-    public static class CaseResponse extends BaseResponseMessages {
-
-        public CaseResponse(String message) {
-            CaseResponse.resultMessage = message;
+    public void addCaseResponse(String message, HttpStatus httpStatus) {
+        if (BaseResponseMessages.resultMessage.equals(message)) {
+            BaseResponseMessages.resultMessage = message;
+            BaseResponseMessages.httpStatus = httpStatus;
         }
+    }
 
-        public CaseResponse(Object content) {
-            CaseResponse.content = content;
+
+    public void addCaseResponseContent(String message, HttpStatus httpStatus) {
+        if (!Objects.equals(BaseResponseMessages.content, null)) {
+            BaseResponseMessages.resultMessage = message;
+            BaseResponseMessages.httpStatus = httpStatus;
         }
+    }
 
-        public CaseResponse addCaseResponse(String message, HttpStatus httpStatus) {
-            if (CaseResponse.resultMessage.equals(message)) {
-                CaseResponse.resultMessage = message;
-                CaseResponse.httpStatus = httpStatus;
-            }
-            return this;
-        }
-
-        public CaseResponse addCaseResponseContent(String message, HttpStatus httpStatus) {
-            if (CaseResponse.resultMessage.equals(message) && !Objects.equals(CaseResponse.content, null)) {
-                CaseResponse.resultMessage = message;
-                CaseResponse.httpStatus = httpStatus;
-            }
-            return this;
-        }
-
-        public CaseResponse addCaseResponseContentNull(String message, HttpStatus httpStatus) {
-            if (CaseResponse.resultMessage.equals(message) && Objects.equals(CaseResponse.content, null)) {
-                CaseResponse.resultMessage = message;
-                CaseResponse.httpStatus = httpStatus;
-            }
-            return this;
+    public void addCaseResponseContentNull(String message, HttpStatus httpStatus) {
+        if (Objects.equals(BaseResponseMessages.content, null)) {
+            BaseResponseMessages.resultMessage = message;
+        BaseResponseMessages.httpStatus = httpStatus;
         }
     }
 }

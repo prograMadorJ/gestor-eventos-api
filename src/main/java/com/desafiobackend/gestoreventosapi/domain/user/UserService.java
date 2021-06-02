@@ -1,6 +1,7 @@
 package com.desafiobackend.gestoreventosapi.domain.user;
 
 import com.desafiobackend.gestoreventosapi.base.RestServiceBaseImpl;
+import com.desafiobackend.gestoreventosapi.base.RestServiceBaseInterface;
 import com.desafiobackend.gestoreventosapi.domain.event.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,76 +11,110 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
+
 @Service
-public class UserService extends RestServiceBaseImpl<User, UserDTO> {
+public class UserService implements RestServiceBaseInterface<User, UserDTO>{
+
 
     @Autowired
-    private UserRules userRules;
+    private UserRules.IsNotValid notValid;
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private EventService eventService;
 
+    public RestServiceBaseImpl<User, UserDTO> restServiceBase;
+
     @Autowired
-    public UserService(UserRepository repository) {
-        super(repository);
-        this.userRepository = repository;
+    public void init() {
+        restServiceBase = new RestServiceBaseImpl<>(userRepository);
     }
 
     @Override
     public String create(User user) {
-        User userCreate = userRepository.findByEmail(user.getEmail()).orElse(null);
         if (
-                userRules.isNotValid
-                        .whenUserExistsByEmail(userCreate)
-                        .fullValidate()
+                notValid.whenUserExistsByEmail(userRepository.findByEmail(user.getEmail()).isPresent()) &&
+                        notValid.fullValidate()
         ) return UserResponseMessages.CONFLICT;
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        user.setRole("USER");
-        return super.create(user);
+        user.setRoles(Collections.singletonList("USER"));
+        return restServiceBase.create(user);
     }
 
     @Override
     public String update(String id, User user) {
         UserDTO userAuth = getUserAuthenticated();
+
         if(
-                userRules.isNotValid
-                .whenUserAuthIsAdmin(userAuth.isAdmin())
-                .whenUserAuthByEmailSameAsUser(userAuth.getEmail(), user.getEmail())
-                .fullValidate()
+                notValid.whenUserAuthIsAdmin(userAuth.isAdmin()) &&
+                        notValid.whenUserAuthByEmailSameAsUser(userAuth.getEmail(), user.getEmail()) &&
+                        notValid.fullValidate()
         ) {
             return UserResponseMessages.CONFLICT;
+
         } else if (
-                userRules.isNotValid
-                        .whenUserAuthIsNotAdmin(userAuth.isAdmin())
-                        .whenUserAuthByEmailNotSameAsUser(userAuth.getEmail(), user.getEmail())
-                        .whenUserExistsByEmail(userRepository.findByEmail(user.getEmail()).orElse(null))
-                        .fullValidate()
-        ) return UserResponseMessages.CONFLICT;
+                notValid.whenUserAuthIsNotAdmin(userAuth.isAdmin()) &&
+                        notValid.whenUserAuthByEmailNotSameAsUser(userAuth.getEmail(), user.getEmail()) &&
+                        notValid.whenUserExistsByEmail(userRepository.findByEmail(user.getEmail()).isPresent()) &&
+                        notValid.fullValidate()
+        )
+            return UserResponseMessages.CONFLICT;
+
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        return super.update(id, user);
+        return restServiceBase.update(id, user);
     }
 
     @Override
     public String delete(String id) {
         UserDTO userAuth = getUserAuthenticated();
-        User userDelete = userRepository.findById(id).orElse(null);
+        User userDelete = userRepository.findByIdProjectRole(id).orElse(null);
         if(
-                userRules.isNotValid
-                        .whenUserHasOneOrManyEvent(eventService.getEventsByUserId(id))
-                .fullValidate()
+                notValid.whenUserHasOneOrManyEvent(eventService.getEventsByUserId(id)) &&
+                        notValid.fullValidate()
         ) return UserResponseMessages.CANNOT_DELETE_HAS_EVENTS;
 
         else if(
-                userRules.isNotValid
-                        .whenUserAuthWithRoleIsNotSystem(userAuth.getRole())
-                        .whenUserAuthWithRoleIsSystemTryDeleteYourSelf(userAuth.getRole(), userDelete)
-                        .validateAtLeastOne()
+                notValid.whenUserAuthWithRoleIsNotSystem(userAuth.getRoles().toString()) &&
+                        notValid.whenUserAuthWithRoleIsSystemTryDeleteYourSelf(userAuth.getRoles().toString(), userDelete) &&
+                        notValid.validateAtLeastOne()
         ) {
             return UserResponseMessages.CANNOT_DELETE;
         }
-        return super.delete(id);
+        return restServiceBase.delete(id);
+    }
+
+    @Override
+    public User getOne(String id) {
+        return restServiceBase.getOne(id);
+    }
+
+    @Override
+    public UserDTO getOne(String id, Class<? extends UserDTO> clazz) {
+        return restServiceBase.getOne(id, clazz);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return restServiceBase.getAll();
+    }
+
+    @Override
+    public List<UserDTO> getAll(Class<? extends UserDTO> clazz) {
+        return restServiceBase.getAll(clazz);
+    }
+
+    @Override
+    public UserDTO toDTO(User user, Class<? extends UserDTO> clazz) {
+        return restServiceBase.toDTO(user, clazz);
+    }
+
+    @Override
+    public User toEntity(UserDTO userDTO, Class<? extends User> clazz) {
+        return restServiceBase.toEntity(userDTO, clazz);
     }
 
     public UserDTO getUserByEmail(String email) {

@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class UserDTO extends DTO {
@@ -16,7 +19,9 @@ public class UserDTO extends DTO {
 
     private String email;
 
-    private boolean admin;
+    private List<String> roles = new ArrayList<>();
 
-    private String role;
+    public boolean isAdmin() {
+        return roles.contains("ADMIN");
+    }
 }

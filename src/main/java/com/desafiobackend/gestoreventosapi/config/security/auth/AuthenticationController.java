@@ -48,7 +48,7 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("invalid username or password");
+            throw new BadCredentialsException(AuthenticateResponseMessages.INVALID_USERNAME_PASSWORD);
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
@@ -58,7 +58,7 @@ public class AuthenticationController {
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .sign(Algorithm.HMAC512(SECRET.getBytes()));
 
-        return new RestResponse("authentication success", new AuthenticationResponse(jwtToken, userService.getUserByEmail(authenticationRequest.getUsername()))).status(HttpStatus.OK);
+        return new RestResponse(AuthenticateResponseMessages.AUTHENTICATION_SUCCESS, new AuthenticationResponse(jwtToken, userService.getUserByEmail(authenticationRequest.getUsername()))).status(HttpStatus.OK);
     }
 
 }

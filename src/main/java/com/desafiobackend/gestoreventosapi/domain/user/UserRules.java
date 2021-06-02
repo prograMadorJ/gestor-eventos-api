@@ -4,6 +4,7 @@ import com.desafiobackend.gestoreventosapi.base.BaseRules;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,49 +14,54 @@ public class UserRules extends BaseRules {
     @Autowired
     public IsNotValid isNotValid;
 
+
     @Service
-    public static class IsNotValid extends UserRules {
+    public static class IsNotValid extends BaseRules {
 
-        public IsNotValid whenUserExistsByEmail(User resultFindUserByEmail) {
-            rules.add(resultFindUserByEmail != null);
-            return this;
+        public boolean whenUserIdIsNull(User user) {
+            return rules.add(user.getId() == null);
         }
 
-        public IsNotValid whenUserAuthIsNotAdmin(boolean userAuthAdmin) {
-            rules.add(Objects.equals(userAuthAdmin, false));
-            return this;
+        public boolean whenUserIsNull(User user) {
+            return rules.add(user == null);
         }
 
-        public IsNotValid whenUserAuthIsAdmin(boolean userAuthAdmin) {
-            rules.add(Objects.equals(userAuthAdmin, true));
-            return this;
+        public boolean whenUserExistsByEmail(Boolean resultFindUserByEmail) {
+           return rules.add(Objects.equals(resultFindUserByEmail, true));
         }
 
-        public IsNotValid whenUserAuthByEmailNotSameAsUser(String userAuthEmail, String userEmail) {
-            rules.add(!userAuthEmail.equals(userEmail));
-            return this;
+        public boolean whenUserIsNotAuth(UserDTO userDTO) {
+            return rules.add(userDTO == null);
         }
 
-        public IsNotValid whenUserAuthByEmailSameAsUser(String userAuthEmail, String userEmail) {
-            rules.add(userAuthEmail.equals(userEmail));
-            return this;
+        public boolean whenUserAuthIsNotAdmin(boolean userAuthAdmin) {
+            return rules.add(Objects.equals(userAuthAdmin, false));
         }
 
-        public IsNotValid whenUserAuthWithRoleIsNotSystem(String userAuthRole) {
-            rules.add(!userAuthRole.equals("SYSTEM"));
-            return this;
+        public boolean whenUserAuthIsAdmin(boolean userAuthAdmin) {
+            return rules.add(Objects.equals(userAuthAdmin, true));
         }
 
-        public IsNotValid whenUserAuthWithRoleIsSystemTryDeleteYourSelf(String userAuthRole, User resultFindUser) {
-            String deleteUserRole = resultFindUser != null ? resultFindUser.getRole() : null;
-            rules.add(userAuthRole.equals("SYSTEM") && userAuthRole.equals(deleteUserRole));
-            return this;
+        public boolean whenUserAuthByEmailNotSameAsUser(String userAuthEmail, String userEmail) {
+            return rules.add(!userAuthEmail.equals(userEmail));
         }
 
-        public IsNotValid whenUserHasOneOrManyEvent(List resultFindEventsByUserId) {
+        public boolean whenUserAuthByEmailSameAsUser(String userAuthEmail, String userEmail) {
+            return rules.add(userAuthEmail.equals(userEmail));
+        }
+
+        public boolean whenUserAuthWithRoleIsNotSystem(String userAuthRole) {
+            return rules.add(!userAuthRole.contains("SYSTEM"));
+        }
+
+        public boolean whenUserAuthWithRoleIsSystemTryDeleteYourSelf(String userAuthRole, User resultFindUser) {
+            String deleteUserRole = resultFindUser != null ? resultFindUser.getRoles().toString() : null;
+            return rules.add(userAuthRole.contains("SYSTEM") && userAuthRole.equals(deleteUserRole));
+        }
+
+        public boolean whenUserHasOneOrManyEvent(List resultFindEventsByUserId) {
             boolean userHasEvents = resultFindEventsByUserId != null && resultFindEventsByUserId.size() > 0;
-            rules.add(userHasEvents);
-            return this;
+            return rules.add(userHasEvents);
         }
 
     }
